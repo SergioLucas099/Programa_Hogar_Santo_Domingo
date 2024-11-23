@@ -337,7 +337,7 @@ class Anciano(tk.Toplevel):
             except mysql.connector.Error as e:
                 messagebox.showerror("Error", f"Error al eliminar registro: {e}")
             finally:
-                conn.close()            
+                pass
 
     def actualizar_tabla_ancianos (self):
         cedula = self.entrynumeroDocumento.get()
