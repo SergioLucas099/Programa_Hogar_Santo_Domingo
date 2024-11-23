@@ -9,19 +9,19 @@ from ventana_principal import VentanaPrincipal
 from usuarios import Usuarios
 import mysql.connector
 
-# Conexión con la base de datos sqlite3
-conn = sqlite3.connect('Hogar_Santo_Domingo.db')
-cursor = conn.cursor()
+# # Conexión con la base de datos sqlite3
+# conn = sqlite3.connect('Hogar_Santo_Domingo.db')
+# cursor = conn.cursor()
 
 # Conexión con la base de datos Mysql
-connMysql = mysql.connector.connect(
+conn = mysql.connector.connect(
         host="localhost",  # Siempre será localhost en XAMPP
         user="root",       # O el nombre de usuario que creaste
         password="",       # Contraseña (vacía si usas root)
         database="base_datos_hogar_santo_domingo"  # Nombre de tu base de datos
     )
 
-cursorMysql = connMysql.cursor()
+cursor = conn.cursor()
 
 class Container(tk.Frame):
     def __init__(self, padre, controlador):
@@ -61,9 +61,29 @@ class Container(tk.Frame):
         dato_usuario = self.usuario.get()
         dato_contraseña = self.contraseña.get()
 
-        # Consulta para verificar las credenciales
-        cursor.execute("SELECT Id, NombreCompleto FROM Usuarios WHERE Correo=? AND Contraseña=?", (dato_usuario, dato_contraseña))
-        resultado = cursor.fetchone()
+        try:
+            # Consulta para verificar las credenciales
+            cursor.execute(
+                "SELECT Id, NombreCompleto FROM Usuarios WHERE Correo=%s AND Contraseña=%s", 
+                (dato_usuario, dato_contraseña)
+            )
+            resultado = cursor.fetchone()
+
+            if resultado:            
+                self.controlador.withdraw()  # Destruye Ventana
+                self.show_frames(VentanaPrincipal)
+            elif dato_usuario == "adminPrincipal" and dato_contraseña == "1234":
+                self.controlador.withdraw()
+                self.show_frames(Usuarios)
+            else:
+                messagebox.showerror("Error", "Nombre o contraseña incorrectos")
+                
+        except mysql.connector.Error as e:
+            messagebox.showerror("Error de base de datos", f"Error: {e}")
+            
+        finally:
+            self.usuario.delete(0, tk.END)  # Limpia el contenido de la casilla de texto
+            self.contraseña.delete(0, tk.END)  # Limpia el contenido de la casilla de texto
 
         if resultado:            
             self.controlador.withdraw() # Destruye Ventana
