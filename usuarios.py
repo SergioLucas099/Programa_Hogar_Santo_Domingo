@@ -3,9 +3,20 @@ import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
 import sqlite3
+import mysql.connector
 
-# Conectar a la base de datos
-conn = sqlite3.connect('Hogar_Santo_Domingo.db')
+# # Conectar a la base de datos sqlite3
+# conn = sqlite3.connect('Hogar_Santo_Domingo.db')
+# cursor = conn.cursor()
+
+# Conexión con la base de datos Mysql
+conn = mysql.connector.connect(
+        host="localhost",  # Siempre será localhost en XAMPP
+        user="root",       # O el nombre de usuario que creaste
+        password="",       # Contraseña (vacía si usas root)
+        database="base_datos_hogar_santo_domingo"  # Nombre de tu base de datos
+    )
+
 cursor = conn.cursor()
 
 class Usuarios(tk.Frame):
@@ -99,12 +110,14 @@ class Usuarios(tk.Frame):
         
         # Insertar en la base de datos
         try:
-            cursor.execute("INSERT INTO Usuarios (Id, NombreCompleto, Correo, Contraseña) VALUES (?, ?, ?, ?)",
-                        (cedula, nombre, correo, contraseña))
-            conn.commit()
+            cursor.execute(
+                "INSERT INTO usuarios (Id, NombreCompleto, Correo, Contraseña) VALUES (%s, %s, %s, %s)",
+                (cedula, nombre, correo, contraseña)
+            )
+            conn.commit()  # Confirma los cambios en la base de datos
             messagebox.showinfo("Éxito", "Usuario creado con éxito.")
-            self.limpiar()
-        except sqlite3.Error as e:
+            self.limpiar()  # Función para limpiar los campos del formulario
+        except mysql.connector.Error as e:
             messagebox.showerror("Error", f"Error al crear registro: {e}")
 
     def limpiar (self):
