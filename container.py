@@ -84,18 +84,6 @@ class Container(tk.Frame):
         finally:
             self.usuario.delete(0, tk.END)  # Limpia el contenido de la casilla de texto
             self.contraseña.delete(0, tk.END)  # Limpia el contenido de la casilla de texto
-
-        if resultado:            
-            self.controlador.withdraw() # Destruye Ventana
-            self.show_frames(VentanaPrincipal)
-        elif dato_usuario == "adminPrincipal" and dato_contraseña =="1234":
-            self.controlador.withdraw()
-            self.show_frames(Usuarios)
-        else:
-            messagebox.showerror("Error", "Nombre o contraseña incorrectos")
-
-        self.usuario.delete(0, tk.END)  # Limpia el contenido de la casilla de texto
-        self.contraseña.delete(0, tk.END)  # Limpia el contenido de la casilla de texto
     
     def widgets(self):
         frametitulo = tk.Frame(self, bg="#fffce3")
