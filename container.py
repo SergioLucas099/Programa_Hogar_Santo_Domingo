@@ -13,6 +13,7 @@ import mysql.connector
 conn = sqlite3.connect('Hogar_Santo_Domingo.db')
 cursor = conn.cursor()
 
+# Conexión con la base de datos Mysql
 connMysql = mysql.connector.connect(
         host="localhost",  # Siempre será localhost en XAMPP
         user="root",       # O el nombre de usuario que creaste
@@ -81,7 +82,7 @@ class Container(tk.Frame):
         frametitulo.pack()
         frametitulo.place(x=0, y=0, width=1100, height=80)
 
-        titulo = tk.Label(self, text="Gestor de Datos - Hogar Santo Domingo Mysql", bg="#fffce3", font="sans 35 bold", anchor="center")
+        titulo = tk.Label(self, text="Gestor de Datos - Hogar Santo Domingo", bg="#fffce3", font="sans 35 bold", anchor="center")
         titulo.pack()
         titulo.place(x=0, y=0, width=1000, height=80)
 
