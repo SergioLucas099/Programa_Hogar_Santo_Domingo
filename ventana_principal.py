@@ -10,10 +10,6 @@ import sqlite3
 import os
 import sys
 
-# Conectar a la base de datos
-conn = sqlite3.connect('Hogar_Santo_Domingo.db')
-cursor = conn.cursor()
-
 class VentanaPrincipal(tk.Frame):
     def __init__(self, parent, container):
         super().__init__(parent)

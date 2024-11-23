@@ -8,9 +8,20 @@ import sqlite3
 import os
 import sys
 from datetime import datetime
+import mysql.connector
 
-# Conectar a la base de datos
-conn = sqlite3.connect('Hogar_Santo_Domingo.db')
+# # Conectar a la base de datos sqlite3
+# conn = sqlite3.connect('Hogar_Santo_Domingo.db')
+# cursor = conn.cursor()
+
+# Conexión con la base de datos Mysql
+conn = mysql.connector.connect(
+        host="localhost",  # Siempre será localhost en XAMPP
+        user="root",       # O el nombre de usuario que creaste
+        password="",       # Contraseña (vacía si usas root)
+        database="base_datos_hogar_santo_domingo"  # Nombre de tu base de datos
+    )
+
 cursor = conn.cursor()
 
 class Medicamento(tk.Toplevel):
@@ -142,7 +153,7 @@ class Medicamento(tk.Toplevel):
             datos = cursor.fetchall()
             for dato in datos:
                 self.tree_medicamento.insert("", "end", values=dato)
-        except sqlite3.Error as e:
+        except mysql.connector.Error as e:
             messagebox.showerror("Error", f"Error al cargar los datos: {e}")
 
         self.imagen_Crear = Image.open("imagenes/crear.png")
@@ -178,7 +189,7 @@ class Medicamento(tk.Toplevel):
 
         # Buscar en la base de datos
         try:
-            cursor.execute("SELECT * FROM Tabla_Medicamentos WHERE Nombre LIKE ?", ('%' + nombre_buscado + '%',))
+            cursor.execute("SELECT * FROM Tabla_Medicamentos WHERE Nombre LIKE %s", ('%' + nombre_buscado + '%',))
             registros = cursor.fetchall()
 
             # Mostrar los datos encontrados o mensaje de error
@@ -188,7 +199,7 @@ class Medicamento(tk.Toplevel):
             else:
                 messagebox.showinfo("Aviso", "No se encontró ningún registro con ese nombre.")
 
-        except sqlite3.Error as e:
+        except mysql.connector.Error as e:
             messagebox.showerror("Error", f"No se pudo realizar la búsqueda: {e}")
 
     def crearDatoMedicamento (self):
@@ -205,13 +216,13 @@ class Medicamento(tk.Toplevel):
 
         # Insertar en la base de datos
         try:
-            cursor.execute("INSERT INTO Tabla_Medicamentos (Codigo, Nombre, Descripcion, Dosificacion, FechaVencimiento) VALUES (?, ?, ?, ?, ?)",
+            cursor.execute("INSERT INTO Tabla_Medicamentos (Codigo, Nombre, Descripcion, Dosificacion, FechaVencimiento) VALUES (%s, %s, %s, %s, %s)",
                         (codigo, nombre, descripcion, dosificacion, vencimiento))
             conn.commit()
             messagebox.showinfo("Éxito", "Registro creado con éxito.")
             self.tree_medicamento.insert("", "end", values=(codigo, nombre, descripcion, dosificacion, vencimiento))
             self.limpiar()
-        except sqlite3.Error as e:
+        except mysql.connector.Error as e:
             messagebox.showerror("Error", f"Error al crear registro: {e}")
 
     def eliminarDatoMedicamento (self):
@@ -224,12 +235,12 @@ class Medicamento(tk.Toplevel):
         if messagebox.askyesno("Confirmar", "¿Estás seguro de que deseas eliminar el registro seleccionado?"):
             codigo = self.tree_medicamento.item(selected_item)["values"][0]
             try:
-                cursor.execute("DELETE FROM Tabla_Medicamentos WHERE Codigo = ?", (codigo,))
+                cursor.execute("DELETE FROM Tabla_Medicamentos WHERE Codigo = %s", (codigo,))
                 conn.commit()
                 self.tree_medicamento.delete(selected_item)
                 messagebox.showinfo("Éxito", "Registro eliminado con éxito.")
                 self.limpiar()
-            except sqlite3.Error as e:
+            except mysql.connector.Error as e:
                 messagebox.showerror("Error", f"Error al eliminar registro: {e}")
 
     def actualizar_tabla_personal (self):
@@ -243,8 +254,8 @@ class Medicamento(tk.Toplevel):
             # Actualizar los datos de la tabla ancianos
             cursor.execute("""
                 UPDATE Tabla_Medicamentos
-                SET Nombre = ?, Descripcion = ?, Dosificacion = ?, FechaVencimiento = ?
-                WHERE Codigo = ?
+                SET Nombre = %s, Descripcion = %s, Dosificacion = %s, FechaVencimiento = %s
+                WHERE Codigo = %s
             """, (nombre, descripcion, dosificacion, vencimiento, codigo))
             conn.commit()
 
@@ -257,7 +268,7 @@ class Medicamento(tk.Toplevel):
             else:
                 messagebox.showwarning("Aviso", "No se encontró ningún dato con ese ID.")
 
-        except sqlite3.Error as e:
+        except mysql.connector.Error as e:
             messagebox.showerror("Error", f"No se pudo actualizar el dato: {e}")
 
     def actualizar_treeview(self):

@@ -115,8 +115,6 @@ class Usuarios(tk.Frame):
                 (cedula, nombre, correo, contraseña)
             )
             conn.commit()  # Confirma los cambios en la base de datos
-            # cursor.close()  # Cierra el cursor actual
-            # cursor = conn.cursor()  # Reabre el cursor para que refleje los cambios
             messagebox.showinfo("Éxito", "Usuario creado con éxito.")
             self.limpiar()  # Función para limpiar los campos del formulario
         except mysql.connector.Error as e:

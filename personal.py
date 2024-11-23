@@ -8,9 +8,20 @@ import sqlite3
 import os
 import sys
 from datetime import datetime
+import mysql.connector
 
-# Conectar a la base de datos
-conn = sqlite3.connect('Hogar_Santo_Domingo.db')
+# # Conectar a la base de datos sqlite3
+# conn = sqlite3.connect('Hogar_Santo_Domingo.db')
+# cursor = conn.cursor()
+
+# Conexión con la base de datos Mysql
+conn = mysql.connector.connect(
+        host="localhost",  # Siempre será localhost en XAMPP
+        user="root",       # O el nombre de usuario que creaste
+        password="",       # Contraseña (vacía si usas root)
+        database="base_datos_hogar_santo_domingo"  # Nombre de tu base de datos
+    )
+
 cursor = conn.cursor()
 
 class Personal(tk.Toplevel):
@@ -194,11 +205,11 @@ class Personal(tk.Toplevel):
         self.tree_personal.pack(expand=True, fill=BOTH)
 
         try:
-            cursor.execute("SELECT * FROM Tabla_Personal")
+            cursor.execute("SELECT * FROM tabla_personal")
             datos = cursor.fetchall()
             for dato in datos:
                 self.tree_personal.insert("", "end", values=dato)
-        except sqlite3.Error as e:
+        except mysql.connector.Error as e:
             messagebox.showerror("Error", f"Error al cargar los datos: {e}")
 
         self.imagen_Crear = Image.open("imagenes/crear.png")
@@ -234,7 +245,7 @@ class Personal(tk.Toplevel):
 
         # Buscar en la base de datos
         try:
-            cursor.execute("SELECT * FROM Tabla_Personal WHERE Nombre LIKE ?", ('%' + nombre_buscado + '%',))
+            cursor.execute("SELECT * FROM tabla_personal WHERE Nombre LIKE %s", ('%' + nombre_buscado + '%',))
             registros = cursor.fetchall()
 
             # Mostrar los datos encontrados o mensaje de error
@@ -244,7 +255,7 @@ class Personal(tk.Toplevel):
             else:
                 messagebox.showinfo("Aviso", "No se encontró ningún registro con ese nombre.")
 
-        except sqlite3.Error as e:
+        except mysql.connector.Error as e:
             messagebox.showerror("Error", f"No se pudo realizar la búsqueda: {e}")
 
     def crearDatoPersonal (self):
@@ -266,13 +277,13 @@ class Personal(tk.Toplevel):
 
         # Insertar en la base de datos
         try:
-            cursor.execute("INSERT INTO Tabla_Personal (Cedula, TipoDocumento, Nombre, Edad, Genero, Direccion, Telefono, Cargo, FechaContrato, FechaDespido) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            cursor.execute("INSERT INTO tabla_personal (Cedula, TipoDocumento, Nombre, Edad, Genero, Direccion, Telefono, Cargo, FechaContrato, FechaDespido) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
                         (cedula, tipo_documento, nombre, edad, genero, direccion, telefono, cargo, ingreso, salida))
             conn.commit()
             messagebox.showinfo("Éxito", "Registro creado con éxito.")
             self.tree_personal.insert("", "end", values=(cedula, tipo_documento, nombre, edad, genero, direccion, telefono, cargo, ingreso, salida))
             self.limpiar()
-        except sqlite3.Error as e:
+        except mysql.connector.Error as e:
             messagebox.showerror("Error", f"Error al crear registro: {e}")
 
     def eliminarDatoPersonal (self):
@@ -285,14 +296,12 @@ class Personal(tk.Toplevel):
         if messagebox.askyesno("Confirmar", "¿Estás seguro de que deseas eliminar el registro seleccionado?"):
             cedula = self.tree_personal.item(selected_item)["values"][0]
             try:
-                conn = sqlite3.connect('Hogar_Santo_Domingo.db')
-                cursor = conn.cursor()
-                cursor.execute("DELETE FROM Tabla_Personal WHERE Cedula = ?", (cedula,))
+                cursor.execute("DELETE FROM tabla_personal WHERE Cedula = %s", (cedula,))
                 conn.commit()
                 self.tree_personal.delete(selected_item)
                 messagebox.showinfo("Éxito", "Registro eliminado con éxito.")
                 self.limpiar()
-            except sqlite3.Error as e:
+            except mysql.connector.Error as e:
                 messagebox.showerror("Error", f"Error al eliminar registro: {e}")
             finally:
                 conn.close()
@@ -312,9 +321,9 @@ class Personal(tk.Toplevel):
         try:
             # Actualizar los datos de la tabla ancianos
             cursor.execute("""
-                UPDATE Tabla_Personal
-                SET TipoDocumento = ?, Nombre = ?, Edad = ?, Genero = ?, Direccion = ?, Telefono = ?, Cargo = ?, FechaContrato = ?, FechaDespido = ?
-                WHERE Cedula = ?
+                UPDATE tabla_personal
+                SET TipoDocumento = %s, Nombre = %s, Edad = %s, Genero = %s, Direccion = %s, Telefono = %s, Cargo = %s, FechaContrato = %s, FechaDespido = %s
+                WHERE Cedula = %s
             """, (tipo_documento, nombre, edad, genero, direccion, telefono, cargo, ingreso, salida, cedula))
             conn.commit()
 
@@ -327,7 +336,7 @@ class Personal(tk.Toplevel):
             else:
                 messagebox.showwarning("Aviso", "No se encontró ningún dato con ese ID.")
 
-        except sqlite3.Error as e:
+        except mysql.connector.Error as e:
             messagebox.showerror("Error", f"No se pudo actualizar el dato: {e}")
 
     def actualizar_treeview(self):
@@ -336,7 +345,7 @@ class Personal(tk.Toplevel):
             self.tree_personal.delete(item)
 
         # Conectar a la base de datos y obtener los datos actualizados
-        cursor.execute("SELECT * FROM Tabla_Personal")
+        cursor.execute("SELECT * FROM tabla_personal")
         registros = cursor.fetchall()
 
         # Insertar los datos en el Treeview

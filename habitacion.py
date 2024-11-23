@@ -8,9 +8,20 @@ import sqlite3
 import os
 import sys
 from datetime import datetime
+import mysql.connector
 
-# Conectar a la base de datos
-conn = sqlite3.connect('Hogar_Santo_Domingo.db')
+# # Conectar a la base de datos sqlite3
+# conn = sqlite3.connect('Hogar_Santo_Domingo.db')
+# cursor = conn.cursor()
+
+# Conexión con la base de datos Mysql
+conn = mysql.connector.connect(
+        host="localhost",  # Siempre será localhost en XAMPP
+        user="root",       # O el nombre de usuario que creaste
+        password="",       # Contraseña (vacía si usas root)
+        database="base_datos_hogar_santo_domingo"  # Nombre de tu base de datos
+    )
+
 cursor = conn.cursor()
 
 class Habitacion(tk.Toplevel):
@@ -85,7 +96,7 @@ class Habitacion(tk.Toplevel):
         self.menu_Estado.config(font="sans 13")
         self.menu_Estado.place(x=120, y=140, width=220, height=30)
 
-        cursor.execute("SELECT Nombre FROM Tabla_Ancianos")
+        cursor.execute("SELECT Nombre FROM tabla_ancianos")
         nombres = [fila[0] for fila in cursor.fetchall()]
 
         self.lblAnciano = Label(framecontenido, text="Anciano:", font="sans 15 bold", bg="#fffce3")
@@ -150,11 +161,11 @@ class Habitacion(tk.Toplevel):
         self.tree_habitacion.pack(expand=True, fill=BOTH)
 
         try:
-            cursor.execute("SELECT * FROM Tabla_Habitacion")
+            cursor.execute("SELECT * FROM tabla_habitacion")
             datos = cursor.fetchall()
             for dato in datos:
                 self.tree_habitacion.insert("", "end", values=dato)
-        except sqlite3.Error as e:
+        except mysql.connector.Error as e:
             messagebox.showerror("Error", f"Error al cargar los datos: {e}")
 
         self.imagen_Crear = Image.open("imagenes/crear.png")
@@ -190,7 +201,7 @@ class Habitacion(tk.Toplevel):
 
             # Buscar en la base de datos
             try:
-                cursor.execute("SELECT * FROM Tabla_Habitacion WHERE NombreAnciano LIKE ?", ('%' + nombre_buscado + '%',))
+                cursor.execute("SELECT * FROM tabla_ancianos WHERE NombreAnciano LIKE %s", ('%' + nombre_buscado + '%',))
                 registros = cursor.fetchall()
 
                 # Mostrar los datos encontrados o mensaje de error
@@ -200,7 +211,7 @@ class Habitacion(tk.Toplevel):
                 else:
                     messagebox.showinfo("Aviso", "No se encontró ningún registro con ese nombre.")
 
-            except sqlite3.Error as e:
+            except mysql.connector.Error as e:
                 messagebox.showerror("Error", f"No se pudo realizar la búsqueda: {e}")
 
     def crearDatoHabitacion (self):
@@ -218,13 +229,13 @@ class Habitacion(tk.Toplevel):
 
         # Insertar en la base de datos
         try:
-            cursor.execute("INSERT INTO Tabla_Habitacion (Codigo, Numero, Tipo, Estado, NombreAnciano, Descripcion) VALUES (?, ?, ?, ?, ?, ?)",
+            cursor.execute("INSERT INTO tabla_ancianos (Codigo, Numero, Tipo, Estado, NombreAnciano, Descripcion) VALUES (%s, %s, %s, %s, %s, %s)",
                         (codigo, numero, tipo, estado, nombreAnciano, descripcion))
             conn.commit()
             messagebox.showinfo("Éxito", "Registro creado con éxito.")
             self.tree_habitacion.insert("", "end", values=(codigo, numero, tipo, estado, nombreAnciano, descripcion))
             self.limpiar()
-        except sqlite3.Error as e:
+        except mysql.connector.Error as e:
             messagebox.showerror("Error", f"Error al crear registro: {e}")
     
     def eliminarDatoHabitacion (self):
@@ -237,12 +248,12 @@ class Habitacion(tk.Toplevel):
         if messagebox.askyesno("Confirmar", "¿Estás seguro de que deseas eliminar el registro seleccionado?"):
             codigo = self.tree_habitacion.item(selected_item)["values"][0]
             try:
-                cursor.execute("DELETE FROM Tabla_Habitacion WHERE Codigo = ?", (codigo,))
+                cursor.execute("DELETE FROM tabla_ancianos WHERE Codigo = %s", (codigo,))
                 conn.commit()
                 self.tree_habitacion.delete(selected_item)
                 messagebox.showinfo("Éxito", "Registro eliminado con éxito.")
                 self.limpiar()
-            except sqlite3.Error as e:
+            except mysql.connector.Error as e:
                 messagebox.showerror("Error", f"Error al eliminar registro: {e}")
 
     def actualizar_tabla_personal (self):
@@ -256,9 +267,9 @@ class Habitacion(tk.Toplevel):
         try:
             # Actualizar los datos de la tabla ancianos
             cursor.execute("""
-                UPDATE Tabla_Habitacion
-                SET Numero = ?, Tipo = ?, Estado = ?, NombreAnciano = ?, Descripcion = ?
-                WHERE Codigo = ?
+                UPDATE tabla_ancianos
+                SET Numero = %s, Tipo = %s, Estado = %s, NombreAnciano = %s, Descripcion = %s
+                WHERE Codigo = %s
             """, (numero, tipo, estado, nombreAnciano, descripcion, codigo))
             conn.commit()
 
@@ -271,7 +282,7 @@ class Habitacion(tk.Toplevel):
             else:
                 messagebox.showwarning("Aviso", "No se encontró ningún dato con ese ID.")
 
-        except sqlite3.Error as e:
+        except mysql.connector.Error as e:
             messagebox.showerror("Error", f"No se pudo actualizar el dato: {e}")
     
     def actualizar_treeview(self):
@@ -280,7 +291,7 @@ class Habitacion(tk.Toplevel):
             self.tree_habitacion.delete(item)
 
         # Conectar a la base de datos y obtener los datos actualizados
-        cursor.execute("SELECT * FROM Tabla_Habitacion")
+        cursor.execute("SELECT * FROM tabla_ancianos")
         registros = cursor.fetchall()
 
         # Insertar los datos en el Treeview

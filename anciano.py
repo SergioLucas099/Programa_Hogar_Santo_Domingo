@@ -8,9 +8,20 @@ import sqlite3
 import os
 import sys
 from datetime import datetime
+import mysql.connector
 
-# Conectar a la base de datos
-conn = sqlite3.connect('Hogar_Santo_Domingo.db')
+# # Conectar a la base de datos
+# conn = sqlite3.connect('Hogar_Santo_Domingo.db')
+# cursor = conn.cursor()
+
+# Conexión con la base de datos Mysql
+conn = mysql.connector.connect(
+        host="localhost",  # Siempre será localhost en XAMPP
+        user="root",       # O el nombre de usuario que creaste
+        password="",       # Contraseña (vacía si usas root)
+        database="base_datos_hogar_santo_domingo"  # Nombre de tu base de datos
+    )
+
 cursor = conn.cursor()
 
 class Anciano(tk.Toplevel):
@@ -212,11 +223,11 @@ class Anciano(tk.Toplevel):
         self.tree_ancianos.pack(expand=True, fill=BOTH)
 
         try:
-            cursor.execute("SELECT * FROM Tabla_Ancianos")
+            cursor.execute("SELECT * FROM tabla_ancianos")
             datos = cursor.fetchall()
             for dato in datos:
                 self.tree_ancianos.insert("", "end", values=dato)
-        except sqlite3.Error as e:
+        except mysql.connector.Error as e:
             messagebox.showerror("Error", f"Error al cargar los datos: {e}")
 
         self.imagen_Crear = Image.open("imagenes/crear.png")
@@ -252,7 +263,8 @@ class Anciano(tk.Toplevel):
 
         # Buscar en la base de datos
         try:
-            cursor.execute("SELECT * FROM Tabla_Ancianos WHERE Nombre LIKE ?", ('%' + nombre_buscado + '%',))
+            # Buscar en la base de datos
+            cursor.execute("SELECT * FROM tabla_ancianos WHERE Nombre LIKE %s", ('%' + nombre_buscado + '%',))
             registros = cursor.fetchall()
 
             # Mostrar los datos encontrados o mensaje de error
@@ -262,7 +274,7 @@ class Anciano(tk.Toplevel):
             else:
                 messagebox.showinfo("Aviso", "No se encontró ningún registro con ese nombre.")
 
-        except sqlite3.Error as e:
+        except mysql.connector.Error as e:
             messagebox.showerror("Error", f"No se pudo realizar la búsqueda: {e}")
 
     def crearDatoAnciano (self):
@@ -286,13 +298,13 @@ class Anciano(tk.Toplevel):
         
         # Insertar en la base de datos
         try:
-            cursor.execute("INSERT INTO Tabla_Ancianos (Cedula, TipoDocumento, Nombre, Edad, Nacimiento, Genero, Acudiente, Direccion, Telefono, Condicion, FechaIngreso, FechaSalida) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            cursor.execute("INSERT INTO tabla_ancianos (Cedula, TipoDocumento, Nombre, Edad, Nacimiento, Genero, Acudiente, Direccion, Telefono, Condicion, FechaIngreso, FechaSalida) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
                         (cedula, tipo_documento, nombre, edad, nacimiento, genero, acudiente, direccion, telefono, condicion, ingreso, salida))
             conn.commit()
             messagebox.showinfo("Éxito", "Registro creado con éxito.")
             self.tree_ancianos.insert("", "end", values=(cedula, tipo_documento, nombre, edad, nacimiento, genero, acudiente, direccion, telefono, condicion, ingreso, salida))
             self.limpiar()
-        except sqlite3.Error as e:
+        except mysql.connector.Error as e:
             messagebox.showerror("Error", f"Error al crear registro: {e}")
 
     def eliminarDatoAnciano (self):
@@ -305,9 +317,7 @@ class Anciano(tk.Toplevel):
         if messagebox.askyesno("Confirmar", "¿Estás seguro de que deseas eliminar el registro seleccionado?"):
             cedula = self.tree_ancianos.item(selected_item)["values"][0]
             try:
-                conn = sqlite3.connect('Hogar_Santo_Domingo.db')
-                cursor = conn.cursor()
-                cursor.execute("DELETE FROM Tabla_Ancianos WHERE Cedula = ?", (cedula,))
+                cursor.execute("DELETE FROM tabla_ancianos WHERE Cedula = %s", (cedula,))
                 conn.commit()
                 self.tree_ancianos.delete(selected_item)
                 self.entrynumeroDocumento.config(state="normal")
@@ -324,7 +334,7 @@ class Anciano(tk.Toplevel):
                 self.label_fecha_Ingreso.config(text="Selecciona una fecha")
                 self.label_fecha_salida.config(text="Selecciona una fecha")
                 messagebox.showinfo("Éxito", "Registro eliminado con éxito.")
-            except sqlite3.Error as e:
+            except mysql.connector.Error as e:
                 messagebox.showerror("Error", f"Error al eliminar registro: {e}")
             finally:
                 conn.close()            
@@ -346,9 +356,9 @@ class Anciano(tk.Toplevel):
         try:
             # Actualizar los datos de la tabla ancianos
             cursor.execute("""
-                UPDATE Tabla_Ancianos
-                SET TipoDocumento = ?, Nombre = ?, Edad = ?, Nacimiento = ?, Genero = ?, Acudiente = ?, Direccion = ?, Telefono = ?, Condicion = ?, FechaIngreso = ?, FechaSalida = ?
-                WHERE Cedula = ?
+                UPDATE tabla_ancianos
+                SET TipoDocumento = %s, Nombre = %s, Edad = %s, Nacimiento = %s, Genero = %s, Acudiente = %s, Direccion = %s, Telefono = %s, Condicion = %s, FechaIngreso = %s, FechaSalida = %s
+                WHERE Cedula = %s
             """, (tipo_documento, nombre, edad, nacimiento, genero, acudiente, direccion, telefono, condicion, ingreso, salida, cedula))
             conn.commit()
 
@@ -361,7 +371,7 @@ class Anciano(tk.Toplevel):
             else:
                 messagebox.showwarning("Aviso", "No se encontró ningún usuario con ese ID.")
 
-        except sqlite3.Error as e:
+        except mysql.connector.Error as e:
             messagebox.showerror("Error", f"No se pudo actualizar el usuario: {e}")
 
     def actualizar_treeview(self):
@@ -370,9 +380,7 @@ class Anciano(tk.Toplevel):
             self.tree_ancianos.delete(item)
 
         # Conectar a la base de datos y obtener los datos actualizados
-        conn = sqlite3.connect('Hogar_Santo_Domingo.db')
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM Tabla_Ancianos")
+        cursor.execute("SELECT * FROM tabla_ancianos")
         registros = cursor.fetchall()
 
         # Insertar los datos en el Treeview
