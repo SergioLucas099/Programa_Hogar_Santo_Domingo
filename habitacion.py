@@ -103,6 +103,9 @@ class Habitacion(tk.Toplevel):
         self.lblAnciano.place(x=10, y=180)
         self.rol_Anciano = StringVar(framecontenido)
         self.rol_Anciano.set("Seleccionar nombre")
+        # Verificar si nombres es válido
+        if not nombres or not isinstance(nombres, list):
+            nombres = ["No hay nombres disponibles"]
         self.menu_Anciano = OptionMenu(framecontenido, self.rol_Anciano, *nombres)
         self.menu_Anciano.config(font="sans 13")
         self.menu_Anciano.place(x=120, y=180, width=220, height=30)
