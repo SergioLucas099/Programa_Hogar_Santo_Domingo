@@ -324,9 +324,9 @@ class Medicamento(tk.Toplevel):
         def seleccionar_fecha_vencimiento():
             # Obtener la fecha seleccionada en el formato "dd-mm-aa"
             fecha_seleccionada = calendario.get_date()
-            fecha_formateada = datetime.strptime(fecha_seleccionada, "%d-%m-%Y").strftime("%d-%B-%y")
-            self.label_fecha_Vencimiento.config(text=fecha_formateada)  # Actualizar el label con la fecha seleccionada
-            self.datoFechaVencimiento = fecha_formateada
+            fecha_formateada_mysql = datetime.strptime(fecha_seleccionada, "%d-%m-%Y").strftime("%Y-%m-%d")
+            self.label_fecha_Vencimiento.config(text=fecha_formateada_mysql)  # Actualizar el label con la fecha seleccionada
+            self.datoFechaVencimiento = fecha_formateada_mysql
             top.destroy()  # Cerrar la ventana del calendario
 
         btn_seleccionar_vencimiento = tk.Button(top, text="Seleccionar Fecha", command=seleccionar_fecha_vencimiento)

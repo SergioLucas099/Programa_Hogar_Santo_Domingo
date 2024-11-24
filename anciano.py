@@ -444,9 +444,11 @@ class Anciano(tk.Toplevel):
         def seleccionar_fecha_nacimiento():
             # Obtener la fecha seleccionada en el formato "dd-mm-aa"
             fecha_seleccionada = calendario.get_date()
-            fecha_formateada = datetime.strptime(fecha_seleccionada, "%d-%m-%Y").strftime("%d-%B-%y")
-            self.label_fecha_nacimiento.config(text=fecha_formateada)  # Actualizar el label con la fecha seleccionada
-            self.datoFechaNacimiento = fecha_formateada
+            # Convertir la fecha al formato MySQL "YYYY-MM-DD"
+            fecha_formateada_mysql = datetime.strptime(fecha_seleccionada, "%d-%m-%Y").strftime("%Y-%m-%d")
+            self.label_fecha_nacimiento.config(text=fecha_formateada_mysql)  # Actualizar el label con la fecha seleccionada
+            # Guardar la fecha en formato MySQL para la base de datos
+            self.datoFechaNacimiento = fecha_formateada_mysql
             top.destroy()  # Cerrar la ventana del calendario
 
         btn_seleccionar_nacimiento = tk.Button(top, text="Seleccionar Fecha", command=seleccionar_fecha_nacimiento)
@@ -464,15 +466,9 @@ class Anciano(tk.Toplevel):
         
         # Botón para confirmar la selección de las fechas
         def seleccionar_fecha_ingreso():
-            # Obtener la fecha seleccionada en el formato "dd-mm-aa"
             fecha_seleccionada = calendario.get_date()
-            # Convertir la fecha al formato MySQL "YYYY-MM-DD"
             fecha_formateada_mysql = datetime.strptime(fecha_seleccionada, "%d-%m-%Y").strftime("%Y-%m-%d")
-            
-            # Opcional: Mostrar la fecha en un formato legible en el label
-            fecha_formateada_label = datetime.strptime(fecha_seleccionada, "%d-%m-%Y").strftime("%d-%B-%Y")
-            self.label_fecha_Ingreso.config(text=fecha_formateada_label)
-            
+            self.label_fecha_Ingreso.config(text=fecha_formateada_mysql)
             # Guardar la fecha en formato MySQL para la base de datos
             self.datoFechaIngreso = fecha_formateada_mysql
             top.destroy()  # Cerrar la ventana del calendario
@@ -495,9 +491,10 @@ class Anciano(tk.Toplevel):
         def seleccionar_fecha_salida():
             # Obtener la fecha seleccionada en el formato "dd-mm-aa"
             fecha_seleccionada = calendario.get_date()
-            fecha_formateada = datetime.strptime(fecha_seleccionada, "%d-%m-%Y").strftime("%d-%B-%y")
-            self.label_fecha_salida.config(text=fecha_formateada)  # Actualizar el label con la fecha seleccionada
-            self.datoFechaSalida = fecha_formateada
+            fecha_formateada_mysql = datetime.strptime(fecha_seleccionada, "%d-%m-%Y").strftime("%Y-%m-%d")
+            self.label_fecha_salida.config(text=fecha_formateada_mysql)  # Actualizar el label con la fecha seleccionada
+            # Guardar la fecha en formato MySQL para la base de datos
+            self.datoFechaSalida = fecha_formateada_mysql
             top.destroy()  # Cerrar la ventana del calendario
 
         btn_seleccionar_salida = tk.Button(top, text="Seleccionar Fecha", command=seleccionar_fecha_salida)

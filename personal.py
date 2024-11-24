@@ -403,9 +403,9 @@ class Personal(tk.Toplevel):
         def seleccionar_fecha_ingreso():
             # Obtener la fecha seleccionada en el formato "dd-mm-aa"
             fecha_seleccionada = calendario.get_date()
-            fecha_formateada = datetime.strptime(fecha_seleccionada, "%d-%m-%Y").strftime("%d-%B-%y")
-            self.label_fecha_Contrato.config(text=fecha_formateada)  # Actualizar el label con la fecha seleccionada
-            self.datoFechaContrato = fecha_formateada
+            fecha_formateada_mysql = datetime.strptime(fecha_seleccionada, "%d-%m-%Y").strftime("%Y-%m-%d")
+            self.label_fecha_Contrato.config(text=fecha_formateada_mysql)  # Actualizar el label con la fecha seleccionada
+            self.datoFechaContrato = fecha_formateada_mysql
             top.destroy()  # Cerrar la ventana del calendario
 
         btn_seleccionar_ingreso = tk.Button(top, text="Seleccionar Fecha", command=seleccionar_fecha_ingreso)
@@ -426,9 +426,9 @@ class Personal(tk.Toplevel):
         def seleccionar_fecha_salida():
             # Obtener la fecha seleccionada en el formato "dd-mm-aa"
             fecha_seleccionada = calendario.get_date()
-            fecha_formateada = datetime.strptime(fecha_seleccionada, "%d-%m-%Y").strftime("%d-%B-%y")
-            self.label_fecha_Despido.config(text=fecha_formateada)  # Actualizar el label con la fecha seleccionada
-            self.datoFechaDespido = fecha_formateada
+            fecha_formateada_mysql = datetime.strptime(fecha_seleccionada, "%d-%m-%Y").strftime("%Y-%m-%d")
+            self.label_fecha_Despido.config(text=fecha_formateada_mysql)  # Actualizar el label con la fecha seleccionada
+            self.datoFechaDespido = fecha_formateada_mysql
             top.destroy()  # Cerrar la ventana del calendario
 
         btn_seleccionar_salida = tk.Button(top, text="Seleccionar Fecha", command=seleccionar_fecha_salida)
