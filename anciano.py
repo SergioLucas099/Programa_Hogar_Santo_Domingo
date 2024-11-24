@@ -188,36 +188,36 @@ class Anciano(tk.Toplevel):
         style.configure("Treeview.Heading", font=("sans", 15, "bold"), foreground="#050026")  # Fuente y color para cabecera
         style.configure("Treeview", font=("sans", 11))  # Fuente para los datos
 
-        self.tree_ancianos = ttk.Treeview(treFrame, columns=("Cedula", "Tipo de Documento", "Nombre", "Edad", "Nacimiento", "Género", "Acudiente", "Dirección", "Teléfono", "Condición", "Fecha Ingreso", "Fecha Salida"), show="headings", height=50, yscrollcommand=scroll_y.set, xscrollcommand=scroll_x.set)
+        self.tree_ancianos = ttk.Treeview(treFrame, columns=("Cedula", "Nombre", "Tipo de Documento", "Edad", "Nacimiento", "Género", "Acudiente", "Dirección", "Teléfono", "Fecha Ingreso", "Condición", "Fecha Salida"), show="headings", height=50, yscrollcommand=scroll_y.set, xscrollcommand=scroll_x.set)
         scroll_y.config(command=self.tree_ancianos.yview)
         scroll_x.config(command=self.tree_ancianos.xview)
 
         self.tree_ancianos.bind('<<TreeviewSelect>>', self.seleccionarDatosAnciano)
 
         self.tree_ancianos.heading("#1", text="Cedula")        
-        self.tree_ancianos.heading("#2", text="Tipo de Documento")        
-        self.tree_ancianos.heading("#3", text="Nombre")        
+        self.tree_ancianos.heading("#2", text="Nombre")      
+        self.tree_ancianos.heading("#3", text="Tipo de Documento")        
         self.tree_ancianos.heading("#4", text="Edad")
         self.tree_ancianos.heading("#5", text="Nacimiento")
         self.tree_ancianos.heading("#6", text="Género")
         self.tree_ancianos.heading("#7", text="Acudiente")
         self.tree_ancianos.heading("#8", text="Dirección")
         self.tree_ancianos.heading("#9", text="Teléfono")
-        self.tree_ancianos.heading("#10", text="Condición")
-        self.tree_ancianos.heading("#11", text="Fecha Ingreso")
+        self.tree_ancianos.heading("#10", text="Fecha Ingreso")
+        self.tree_ancianos.heading("#11", text="Condición")
         self.tree_ancianos.heading("#12", text="Fecha Salida")
 
         self.tree_ancianos.column("Cedula", width=120, anchor="center")
-        self.tree_ancianos.column("Tipo de Documento", width=200, anchor="center")
         self.tree_ancianos.column("Nombre", width=200, anchor="center")
+        self.tree_ancianos.column("Tipo de Documento", width=200, anchor="center")
         self.tree_ancianos.column("Edad", width=60, anchor="center")
         self.tree_ancianos.column("Nacimiento", width=180, anchor="center")
         self.tree_ancianos.column("Género", width=130, anchor="center")
         self.tree_ancianos.column("Acudiente", width=130, anchor="center")
         self.tree_ancianos.column("Dirección", width=130, anchor="center")
         self.tree_ancianos.column("Teléfono", width=130, anchor="center")
-        self.tree_ancianos.column("Condición", width=130, anchor="center")
         self.tree_ancianos.column("Fecha Ingreso", width=150, anchor="center")
+        self.tree_ancianos.column("Condición", width=150, anchor="center")
         self.tree_ancianos.column("Fecha Salida", width=130, anchor="center")
 
         self.tree_ancianos.pack(expand=True, fill=BOTH)
