@@ -28,7 +28,7 @@ class Medicamento(tk.Toplevel):
     def __init__(self, parent, container):
         super().__init__(parent)
         self.container = container
-        self.title("Datos Medicamento")
+        self.title("Datos Medicamentos")
 
         self.resizable(False, False)
 
