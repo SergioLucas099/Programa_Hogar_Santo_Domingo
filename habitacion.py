@@ -29,6 +29,9 @@ class Habitacion(tk.Toplevel):
         super().__init__(parent)
         self.container = container
         self.title("Datos Habitacion")
+        
+        self.resizable(False, False)
+
         # Dimensiones de la ventana
         width = 1000
         height = 600
@@ -158,7 +161,7 @@ class Habitacion(tk.Toplevel):
         self.tree_habitacion.column("Tipo", width=150, anchor="center")
         self.tree_habitacion.column("Estado", width=160, anchor="center")
         self.tree_habitacion.column("Nombre Anciano", width=250, anchor="center")
-        self.tree_habitacion.column("Descripción Habitación", width=380, anchor="center")
+        self.tree_habitacion.column("Descripción Habitación", width=500, anchor="center")
 
         self.tree_habitacion.pack(expand=True, fill=BOTH)
 
