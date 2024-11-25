@@ -72,7 +72,6 @@ class Medicamento(tk.Toplevel):
         self.lblnumeroCodigo = Label(framecontenido, text="Codigo:", font="sans 15 bold", bg="#fffce3")
         self.lblnumeroCodigo.place(x=10, y=20)
         self.entrynumeroCodigo = tk.Entry(framecontenido, font="sans 15")
-        self.entrynumeroCodigo.bind("<KeyPress>", validar)
         self.entrynumeroCodigo.place(x=100, y=20, width=130, height=30)
 
         self.lblNombre = Label(framecontenido, text="Nombre:", font="sans 15 bold", bg="#fffce3")
@@ -142,7 +141,7 @@ class Medicamento(tk.Toplevel):
 
         self.tree_medicamento.column("Codigo", width=120, anchor="center")
         self.tree_medicamento.column("Nombre", width=150, anchor="center")
-        self.tree_medicamento.column("Descripcion", width=380, anchor="center")
+        self.tree_medicamento.column("Descripcion", width=500, anchor="center")
         self.tree_medicamento.column("Dosificacion", width=200, anchor="center")
         self.tree_medicamento.column("Fecha Vencimiento", width=200, anchor="center")
 
@@ -165,7 +164,7 @@ class Medicamento(tk.Toplevel):
         self.imagen_Actualizar = Image.open("imagenes/actualizar.png")
         self.imagen_redimensionadaActualizar = self.imagen_Actualizar.resize((50, 50))  # Cambia los valores según el tamaño que desees
         self.icono_btn_Actualizar = ImageTk.PhotoImage(self.imagen_redimensionadaActualizar)
-        self.btn_Actualizar = Button(framecontenidoTabla, text="Actualizar", image=self.icono_btn_Actualizar, padx=20, pady=5, bg="#fffce3", font="sans 18 bold", compound="top", command=self.actualizar_tabla_personal, borderwidth=0, highlightthickness=0)
+        self.btn_Actualizar = Button(framecontenidoTabla, text="Actualizar", image=self.icono_btn_Actualizar, padx=20, pady=5, bg="#fffce3", font="sans 18 bold", compound="top", command=self.actualizar_tabla_medicamento, borderwidth=0, highlightthickness=0)
         self.btn_Actualizar.place(x=180, y=430, width=120, height=90)
 
         self.imagen_Borrar = Image.open("imagenes/borrar.png")
@@ -243,7 +242,7 @@ class Medicamento(tk.Toplevel):
             except mysql.connector.Error as e:
                 messagebox.showerror("Error", f"Error al eliminar registro: {e}")
 
-    def actualizar_tabla_personal (self):
+    def actualizar_tabla_medicamento (self):
         codigo = self.entrynumeroCodigo.get()
         nombre = self.entryNombre.get()
         descripcion = self.entryDescripcion.get("1.0", "end-1c")
@@ -251,9 +250,9 @@ class Medicamento(tk.Toplevel):
         vencimiento = self.label_fecha_Vencimiento.cget("text")
 
         try:
-            # Actualizar los datos de la tabla ancianos
+            # Actualizar los datos de la tabla medicamentos
             cursor.execute("""
-                UPDATE Tabla_Medicamentos
+                UPDATE tabla_medicamentos
                 SET Nombre = %s, Descripcion = %s, Dosificacion = %s, FechaVencimiento = %s
                 WHERE Codigo = %s
             """, (nombre, descripcion, dosificacion, vencimiento, codigo))
@@ -277,7 +276,7 @@ class Medicamento(tk.Toplevel):
             self.tree_medicamento.delete(item)
 
         # Conectar a la base de datos y obtener los datos actualizados
-        cursor.execute("SELECT * FROM Tabla_Medicamentos")
+        cursor.execute("SELECT * FROM tabla_medicamentos")
         registros = cursor.fetchall()
 
         # Insertar los datos en el Treeview
