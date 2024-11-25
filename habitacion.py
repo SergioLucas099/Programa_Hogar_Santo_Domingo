@@ -232,7 +232,7 @@ class Habitacion(tk.Toplevel):
 
         # Insertar en la base de datos
         try:
-            cursor.execute("INSERT INTO tabla_ancianos (Codigo, Numero, Tipo, Estado, NombreAnciano, Descripcion) VALUES (%s, %s, %s, %s, %s, %s)",
+            cursor.execute("INSERT INTO tabla_habitacion (Codigo, Numero, Tipo, Estado, NombreAnciano, Descripcion) VALUES (%s, %s, %s, %s, %s, %s)",
                         (codigo, numero, tipo, estado, nombreAnciano, descripcion))
             conn.commit()
             messagebox.showinfo("Éxito", "Registro creado con éxito.")
@@ -251,7 +251,7 @@ class Habitacion(tk.Toplevel):
         if messagebox.askyesno("Confirmar", "¿Estás seguro de que deseas eliminar el registro seleccionado?"):
             codigo = self.tree_habitacion.item(selected_item)["values"][0]
             try:
-                cursor.execute("DELETE FROM tabla_ancianos WHERE Codigo = %s", (codigo,))
+                cursor.execute("DELETE FROM tabla_habitacion WHERE Codigo = %s", (codigo,))
                 conn.commit()
                 self.tree_habitacion.delete(selected_item)
                 messagebox.showinfo("Éxito", "Registro eliminado con éxito.")
@@ -270,7 +270,7 @@ class Habitacion(tk.Toplevel):
         try:
             # Actualizar los datos de la tabla ancianos
             cursor.execute("""
-                UPDATE tabla_ancianos
+                UPDATE tabla_habitacion
                 SET Numero = %s, Tipo = %s, Estado = %s, NombreAnciano = %s, Descripcion = %s
                 WHERE Codigo = %s
             """, (numero, tipo, estado, nombreAnciano, descripcion, codigo))
@@ -294,7 +294,7 @@ class Habitacion(tk.Toplevel):
             self.tree_habitacion.delete(item)
 
         # Conectar a la base de datos y obtener los datos actualizados
-        cursor.execute("SELECT * FROM tabla_ancianos")
+        cursor.execute("SELECT * FROM tabla_habitacion")
         registros = cursor.fetchall()
 
         # Insertar los datos en el Treeview
