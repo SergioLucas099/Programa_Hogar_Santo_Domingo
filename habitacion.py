@@ -75,7 +75,6 @@ class Habitacion(tk.Toplevel):
         self.lblNumero = Label(framecontenido, text="Número:", font="sans 15 bold", bg="#fffce3")
         self.lblNumero.place(x=10, y=60)
         self.entryNumero = tk.Entry(framecontenido, font="sans 15")
-        self.entryNumero.bind("<KeyPress>", validar)
         self.entryNumero.place(x=100, y=60, width=235, height=30)
 
         self.lblTipo = Label(framecontenido, text="Tipo:", font="sans 15 bold", bg="#fffce3")
